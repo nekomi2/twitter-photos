@@ -6,7 +6,7 @@ Twitter Photos
 
 .. image:: https://travis-ci.org/shichao-an/twitter-photos.png?branch=master
    :target: https://travis-ci.org/shichao-an/twitter-photos
-
+Fork of Twitter Photos, WIP
 Twitter Photos is a command-line tool to get photos from Twitter accounts.
 
 .. image:: https://asciinema.org/a/93714.png
