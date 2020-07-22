@@ -108,3 +108,4 @@ The "twphotos" command accepts the following options:
                         exclude replies
   -s SIZE, --size SIZE  photo size (``orig``, ``large``, ``medium``, ``small`` and ``thumb``)
   -t TYPE, --type TYPE  timeline type (``user`` and ``favorites``)
+  --filter            Ignore retweets and quotes

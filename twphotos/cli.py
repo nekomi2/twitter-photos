@@ -27,5 +27,7 @@ def parse_args():
                         help='photo size')
     parser.add_argument('-t', '--type', choices=TIMELINE_TYPES,
                         help='timeline type')
+    parser.add_argument('--filter', action='store_true',
+                        help='no retweets and quotes')
     args = parser.parse_args()
     return args
