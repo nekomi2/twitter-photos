@@ -58,6 +58,8 @@ class TwitterPhotos(object):
 		self.photos = {}
 		self.max_ids = {}
 		self.since_ids = {}
+		self.final_tweet_time = None
+		self.final_tweet_id = None
 		self._downloaded = 0
 		self._total = 0
 
@@ -108,6 +110,8 @@ class TwitterPhotos(object):
 			min_id = statuses[-1].id
 			max_id = statuses[0].id
 			self.max_ids.setdefault(user, max_id)
+			self.final_tweet_time = datetime.datetime.fromtimestamp(statuses[-1].created_at_in_seconds)
+			self.final_tweet_id = min_id
 
 		fetched_photos = []
 		for s in statuses:
@@ -143,6 +147,10 @@ class TwitterPhotos(object):
 			create_directory(d)
 			self._download_photos(self.photos[user], user, d, size)
 		set_max_ids(self.max_ids)
+	
+	def print_last_tweet_examined(self):
+		print()
+		print(f'Last tweet examined {self.final_tweet_time}\nWith ID {self.final_tweet_id}')
 
 	@property
 	def users(self):
@@ -294,6 +302,7 @@ def main():
 	else:
 		twphotos.get()
 		twphotos.download()
+		twphotos.print_last_tweet_examined()
 
 
 # Register cleanup functions
