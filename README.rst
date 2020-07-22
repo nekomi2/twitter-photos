@@ -2,8 +2,6 @@ Tweepy Branch
 ==============
 
 WIP, for some reason tweepy is incredibly slow, so might have to be abandoned T_T
-Twitter Photos
-==============
 
 .. image:: https://img.shields.io/pypi/v/twitter-photos.png
         :target: https://pypi.python.org/pypi/twitter-photos
