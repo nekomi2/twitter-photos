@@ -23,6 +23,7 @@ Requirements
 Installation
 ------------
 Install this version::
+
     $ pip3 install .
 
 How It Works
