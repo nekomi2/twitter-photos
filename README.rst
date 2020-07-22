@@ -91,6 +91,10 @@ Download small-sized photos ::
 You can retrieve URLs only with ``cut`` command::
 
     $ twphotos -u wired -p | cut -d ' ' -f3
+    
+Ignore retweets and quote tweets::
+
+    $ twphotos -u wired --filter
 
 Command-line Options
 ~~~~~~~~~~~~~~~~~~~~
