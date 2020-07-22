@@ -53,7 +53,7 @@ class TwitterPhotos(object):
 			auth = tweepy.AppAuthHandler(consumer_key=CONSUMER_KEY,
 								   consumer_secret=CONSUMER_SECRET,
 								   )
-            self.api = tweepy.API(auth)
+			self.api = tweepy.API(auth)
 		else:
 			self.api = TestAPI()
 		self.photos = {}
@@ -71,18 +71,19 @@ class TwitterPhotos(object):
 		"""
 		if not silent:
 			print('Retrieving photos from Twitter API...')
-		self.since_ids = read_since_ids(self.users)
-		for user in self.users:
-			if self.increment:
-				since_id = self.since_ids.get(user)
+		# self.since_ids = read_since_ids(self.users)
+		# for user in self.users:
+			# if self.increment:
+			# 	since_id = self.since_ids.get(user)
+			user = self.user
 			photos = self.load(user=user,
 							   count=count,
 							   since_id=since_id,
 							   num=self.num)
 			self.photos[user] = photos[:self.num]
 			self._total += len(self.photos[user])
-			if not photos and user in self.max_ids:
-				del self.max_ids[user]
+			# if not photos and user in self.max_ids:
+			# 	del self.max_ids[user]
 		return self.photos
 
 	def load(self, user=None, count=None, max_id=None,
@@ -92,48 +93,33 @@ class TwitterPhotos(object):
 
 		if self.tl_type == 'favorites':
 			statuses = tweepy.Cursor(self.api.favorites,
-                                    id=user,
-                                    count=count,
+									id=user,
+									count=count,
 									since_id=since_id,
 									max_id=max_id
-                                    ).items(limit=num)
+									).items()
+		elif(self.list_slug):
+			statuses = tweepy.Cursor(self.api.list_timeline,
+									slug=self.list_slug,
+									count=count,
+									since_id=since_id,
+									max_id=max_id
+									).items()
 		else:
-			statuses = self.api.Cursor(self.api.user_timeline,id=user,
-                                    count=count,
+			statuses = tweepy.Cursor(self.api.user_timeline,id=user,
+									count=count,
 									since_id=since_id,
 									max_id=max_id
-                                    ).items(limit=num)
-
-		if statuses:
-			min_id = statuses[-1].id
-			max_id = statuses[0].id
-			self.max_ids.setdefault(user, max_id)
+									).items()
 
 		fetched_photos = []
-		endDate = int(datetime.datetime(2020,7,16).timestamp())
-		startDate = int(datetime.datetime(2020,7,10).timestamp())
 		for s in statuses:
-			# (not self.filter or (not s.retweeted_status and not s.quoted_status)
-			if s.media is not None and startDate <= s.created_at_in_seconds <= endDate:
-				for m in s.media:
-					m_dict = m.AsDict()
-					if m_dict['type'] == 'photo':
-						t = (m_dict['id'], m_dict['media_url'])
+			if 'media' in s.entities:
+				for m in s.entities['media']:
+					if m['type'] == 'photo':
+						t = (m['id'], m['media_url'])
 						fetched_photos.append(t)
-
-		if num is not None:
-			if len(photos + fetched_photos) >= num:
-				return photos + fetched_photos
-
-		if statuses and count is None:
-			return self.load(count=None,
-							 user=user,
-							 max_id=min_id - 1,
-							 since_id=since_id,
-							 num=num,
-							 photos=photos + fetched_photos)
-		else:
-			return photos + fetched_photos
+		return photos + fetched_photos
 
 	def download(self, size=None):
 		if size is None:
@@ -145,21 +131,7 @@ class TwitterPhotos(object):
 			# Create intermediate directory
 			create_directory(d)
 			self._download_photos(self.photos[user], user, d, size)
-		set_max_ids(self.max_ids)
-
-	@property
-	def users(self):
-		members = None
-		if self.list_slug:
-			owner = self.user
-			_members = self.api.GetListMembers(list_id=None,
-											   slug=self.list_slug,
-											   owner_screen_name=owner)
-			members = [member.screen_name for member in _members]
-		else:
-			if self.user:
-				members = [self.user]
-		return members
+		# set_max_ids(self.max_ids)
 
 	def verify_credentials(self):
 		return self.api.VerifyCredentials()
