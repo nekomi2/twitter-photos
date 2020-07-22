@@ -110,7 +110,6 @@ class TwitterPhotos(object):
 			self.max_ids.setdefault(user, max_id)
 
 		fetched_photos = []
-		
 		for s in statuses:
 			if s.media is not None and (not self.filter or (not s.retweeted_status and not s.quoted_status)):
 				for m in s.media:
