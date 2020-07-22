@@ -22,6 +22,9 @@ Requirements
 
 Installation
 ------------
+Install this version::
+It's recommended that you use pip3 to install the package::
+    $ pip3 install .
 
 You can install the package with pip::
 
