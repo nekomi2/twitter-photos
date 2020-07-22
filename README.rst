@@ -6,6 +6,7 @@ Twitter Photos
 
 .. image:: https://travis-ci.org/shichao-an/twitter-photos.png?branch=master
    :target: https://travis-ci.org/shichao-an/twitter-photos
+Fork of Twitter Photos, WIP
 
 Twitter Photos is a command-line tool to get photos from Twitter accounts.
 
@@ -90,6 +91,10 @@ Download small-sized photos ::
 You can retrieve URLs only with ``cut`` command::
 
     $ twphotos -u wired -p | cut -d ' ' -f3
+    
+Ignore retweets and quote tweets::
+
+    $ twphotos -u wired --filter
 
 Command-line Options
 ~~~~~~~~~~~~~~~~~~~~
