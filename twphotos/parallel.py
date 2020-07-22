@@ -1,3 +1,4 @@
+from .settings import PROGRESS_FORMATTER, NUM_THREADS
 import os
 import threading
 import sys
@@ -7,7 +8,6 @@ if is_py2:
     import Queue as queue
 else:
     import queue as queue
-from .settings import PROGRESS_FORMATTER, NUM_THREADS
 
 
 pool_manager = urllib3.PoolManager()

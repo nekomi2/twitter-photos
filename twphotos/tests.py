@@ -1,11 +1,11 @@
+from .increment import remove_since_id
+from .utils import create_directory
+from .photos import TwitterPhotos
+from .settings import PROJECT_PATH
+from unittest import TestCase
+import shutil
 import os
 os.environ['TWPHOTOS_TEST_CONFIG'] = '0'
-import shutil
-from unittest import TestCase
-from .settings import PROJECT_PATH
-from .photos import TwitterPhotos
-from .utils import create_directory
-from .increment import remove_since_id
 
 TEST_OUTPUT = 'test-output'
 TEST_USER = 'WIRED'
@@ -14,6 +14,7 @@ TEST_LIST_SLUG = 'ces-2014'
 
 class TestPhotos(TestCase):
     """Test TwitterPhotos class programmatically"""
+
     def setUp(self):
         d = os.path.join(PROJECT_PATH, TEST_OUTPUT)
         create_directory(d)

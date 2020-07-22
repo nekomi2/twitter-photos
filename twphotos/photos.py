@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals, absolute_import
+import tweepy
 import atexit
 import collections
 import json
@@ -18,6 +19,7 @@ import twitter
 
 
 class TwitterPhotos(object):
+
 	def __init__(self, user=None, list_slug=None, outdir=None,
 				 num=None, parallel=False, increment=False, size=None,
 				 exclude_replies=False, tl_type=None, test=False, filter=False):
@@ -48,13 +50,12 @@ class TwitterPhotos(object):
 		self.test = test
 		self.filter = filter
 		if not self.test:
-			self.api = twitter.Api(consumer_key=CONSUMER_KEY,
+			auth = tweepy.AppAuthHandler(consumer_key=CONSUMER_KEY,
 								   consumer_secret=CONSUMER_SECRET,
-								   access_token_key=ACCESS_TOKEN,
-								   access_token_secret=ACCESS_TOKEN_SECRET)
+								   )
+            self.api = tweepy.API(auth)
 		else:
 			self.api = TestAPI()
-		self.auth_user = None
 		self.photos = {}
 		self.max_ids = {}
 		self.since_ids = {}
@@ -70,7 +71,6 @@ class TwitterPhotos(object):
 		"""
 		if not silent:
 			print('Retrieving photos from Twitter API...')
-		self.auth_user = self.verify_credentials().screen_name
 		self.since_ids = read_since_ids(self.users)
 		for user in self.users:
 			if self.increment:
@@ -91,18 +91,18 @@ class TwitterPhotos(object):
 			photos = []
 
 		if self.tl_type == 'favorites':
-			statuses = self.api.GetFavorites(
-				screen_name=user,
-				count=count or COUNT_PER_GET,
-				max_id=max_id,
-				since_id=since_id)
+			statuses = tweepy.Cursor(self.api.favorites,
+                                    id=user,
+                                    count=count,
+									since_id=since_id,
+									max_id=max_id
+                                    ).items(limit=num)
 		else:
-			statuses = self.api.GetUserTimeline(
-				screen_name=user,
-				count=count or COUNT_PER_GET,
-				max_id=max_id,
-				since_id=since_id,
-				exclude_replies=self.exclude_replies)
+			statuses = self.api.Cursor(self.api.user_timeline,id=user,
+                                    count=count,
+									since_id=since_id,
+									max_id=max_id
+                                    ).items(limit=num)
 
 		if statuses:
 			min_id = statuses[-1].id
@@ -110,8 +110,11 @@ class TwitterPhotos(object):
 			self.max_ids.setdefault(user, max_id)
 
 		fetched_photos = []
+		endDate = int(datetime.datetime(2020,7,16).timestamp())
+		startDate = int(datetime.datetime(2020,7,10).timestamp())
 		for s in statuses:
-			if s.media is not None and (not self.filter or (not s.retweeted_status and not s.quoted_status)):
+			# (not self.filter or (not s.retweeted_status and not s.quoted_status)
+			if s.media is not None and startDate <= s.created_at_in_seconds <= endDate:
 				for m in s.media:
 					m_dict = m.AsDict()
 					if m_dict['type'] == 'photo':
@@ -148,7 +151,7 @@ class TwitterPhotos(object):
 	def users(self):
 		members = None
 		if self.list_slug:
-			owner = self.user or self.auth_user
+			owner = self.user
 			_members = self.api.GetListMembers(list_id=None,
 											   slug=self.list_slug,
 											   owner_screen_name=owner)
@@ -156,8 +159,6 @@ class TwitterPhotos(object):
 		else:
 			if self.user:
 				members = [self.user]
-			else:
-				members = [self.auth_user]
 		return members
 
 	def verify_credentials(self):
@@ -287,7 +288,7 @@ def main():
 							 tl_type=args.type,
 							 filter = args.filter
 							 )
-	# Print only scree_name, tweet id and media_url
+	# Print only screen_name, tweet id and media_url
 	if args.print:
 		twphotos.get(silent=True)
 		twphotos.print_urls()

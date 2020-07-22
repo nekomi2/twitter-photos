@@ -1,10 +1,10 @@
+from .settings import SECTIONS, CONFIG
 import sys
 is_py2 = sys.version[0] == '2'
 if is_py2:
     import ConfigParser as configparser
 else:
     import configparser as configparser
-from .settings import SECTIONS, CONFIG
 
 
 config = configparser.ConfigParser()
