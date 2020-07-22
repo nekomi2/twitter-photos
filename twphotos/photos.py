@@ -92,33 +92,35 @@ class TwitterPhotos(object):
 			photos = []
 
 		if self.tl_type == 'favorites':
-			statuses = tweepy.Cursor(self.api.favorites,
+			pages = tweepy.Cursor(self.api.favorites,
 									id=user,
 									count=count,
 									since_id=since_id,
 									max_id=max_id
-									).items()
+									).pages()
 		elif(self.list_slug):
-			statuses = tweepy.Cursor(self.api.list_timeline,
+			pages = tweepy.Cursor(self.api.list_timeline,
 									slug=self.list_slug,
 									count=count,
 									since_id=since_id,
 									max_id=max_id
-									).items()
+									).pages()
 		else:
-			statuses = tweepy.Cursor(self.api.user_timeline,id=user,
+			pages = tweepy.Cursor(self.api.user_timeline,id=user,
 									count=count,
 									since_id=since_id,
 									max_id=max_id
-									).items()
+									).pages()
 
 		fetched_photos = []
-		for s in statuses:
-			if 'media' in s.entities:
-				for m in s.entities['media']:
-					if m['type'] == 'photo':
-						t = (m['id'], m['media_url'])
-						fetched_photos.append(t)
+		if pages:
+			for page in pages:
+				for s in page:
+					if 'media' in s.entities:
+						for m in s.entities['media']:
+							if m['type'] == 'photo':
+								t = (m['id'], m['media_url'])
+								fetched_photos.append(t)
 		return photos + fetched_photos
 
 	def download(self, size=None):

@@ -18,7 +18,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'twphotos = twphotos.photos_old:main',
+            'twphotos = twphotos.photos:main',
         ],
     },
     classifiers=[
