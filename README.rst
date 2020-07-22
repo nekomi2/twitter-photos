@@ -23,16 +23,7 @@ Requirements
 Installation
 ------------
 Install this version::
-It's recommended that you use pip3 to install the package::
     $ pip3 install .
-
-You can install the package with pip::
-
-  $ pip install twitter-photos
-
-Or, you can download a source distribution and install with these commands::
-
-  $ python setup.py install
 
 How It Works
 ------------
